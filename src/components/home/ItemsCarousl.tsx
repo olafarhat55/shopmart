@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
 import {
@@ -12,7 +11,7 @@ import {
 export default function ItemsCarousl({
   categories,
 }: {
-  categories: {name: string; image: string; _id: string}[];
+  categories: { name: string; image: string; _id: string }[];
 }) {
   return (
     <div className="w-full">
@@ -36,11 +35,11 @@ export default function ItemsCarousl({
                 className="group relative overflow-hidden rounded-2xl aspect-square border border-border/40 hover:shadow-lg transition-shadow block"
               >
                 <div className="absolute inset-0">
-                  <Image
+                  <img
                     src={cat.image}
                     alt={cat.name}
-                    fill
-                    className="object-cover"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>

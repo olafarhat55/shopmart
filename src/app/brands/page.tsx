@@ -1,7 +1,7 @@
-"use client"
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { apiService } from "@/service/apiService";
@@ -76,7 +76,6 @@ export default function BrandsPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold">
               Browse Brands
             </h1>
-           
           </motion.div>
         </header>
 
@@ -100,41 +99,35 @@ export default function BrandsPage() {
                     key={brand._id}
                     variants={cardVariants}
                     whileHover="hover"
-                    className="group rounded-2xl overflow-hidden border border-border/40 bg-gradient-to-b from-white/2 to-background/2 shadow-lg relative"
+                    className="group rounded-2xl overflow-hidden border border-border/40 bg-gradient-to-b from-white/2 to-background/2 shadow-lg"
                   >
                     <Link
                       href={`/products?brands=${brand._id}`}
                       prefetch={false}
                       className="block"
                     >
-                      <div className="relative h-45 sm:h-40 md:h-50 w-full">
-                        <Image
+                      <div className="relative h-45 sm:h-40 md:h-50 w-full overflow-hidden">
+                        <img
                           src={brand.image}
                           alt={brand.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-400 group-hover:scale-105"
-                          priority={false}
+                          loading="lazy"
+                          className="object-cover w-full h-full transition-transform duration-400 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                       </div>
 
                       <div className="p-4 flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <h3 className="text-lg font-semibold truncate">
-                            {brand.name}
-                          </h3>
-                        </div>
+                        <h3 className="text-lg font-semibold truncate">
+                          {brand.name}
+                        </h3>
 
-                        <div className="flex-shrink-0">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="opacity-90 group-hover:opacity-100"
-                          >
-                            Explore
-                          </Button>
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="opacity-90 group-hover:opacity-100"
+                        >
+                          Explore
+                        </Button>
                       </div>
                     </Link>
                   </motion.article>

@@ -1,7 +1,7 @@
-"use client"
+"use client";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { apiService } from "@/service/apiService";
@@ -9,6 +9,7 @@ import nProgress from "nprogress";
 import { ICategory } from "@/interfaces";
 import type { Variants } from "framer-motion";
 
+/* ================= Animations ================= */
 const container = {
   hidden: { opacity: 1 },
   show: {
@@ -31,7 +32,7 @@ const cardVariants: Variants = {
   hover: { scale: 1.03, transition: { duration: 0.18 } },
 };
 
-
+/* ================= Skeleton ================= */
 function SkeletonCard() {
   return (
     <div className="rounded-2xl overflow-hidden border border-border/40 bg-background shadow-sm animate-pulse">
@@ -44,6 +45,7 @@ function SkeletonCard() {
   );
 }
 
+/* ================= Page ================= */
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<ICategory[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,6 @@ export default function CategoriesPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold">
               Browse Categories
             </h1>
-            
           </motion.div>
         </header>
 
@@ -108,14 +109,13 @@ export default function CategoriesPage() {
                       prefetch={false}
                       className="block"
                     >
-                      <div className="relative h-60 sm:h-70 md:h-100 w-full">
-                        <Image
+                      {/* IMAGE (FIXED) */}
+                      <div className="relative h-60 sm:h-70 md:h-100 w-full overflow-hidden">
+                        <img
                           src={cat.image}
                           alt={cat.name}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-400 group-hover:scale-105"
-                          priority={false}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                       </div>

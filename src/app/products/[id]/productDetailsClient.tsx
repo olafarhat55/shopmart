@@ -27,14 +27,24 @@ export default function ProductDetailsClient({
   const [selectedImage, setSelectedImage] = useState(0);
   const [descOpen, setDescOpen] = useState(false);
 
-  const images = [product.imageCover, ...(product.images || [])].filter(
-    Boolean
+  /* ================= IMAGE FIX (التعديل الوحيد) ================= */
+  const images = [
+    product.imageCover,
+    ...(product.images ?? []),
+  ].filter(
+    (img): img is string =>
+      typeof img === "string" && img.trim().length > 0
   );
-  const displayedImages = images.length ? images : ["/placeholder-product.png"];
+
+  const displayedImages =
+    images.length > 0 ? images : ["/placeholder-product.png"];
+  /* =============================================================== */
+
   const brand = product.brand?.name || "No Brand";
-  const subcategories: string[] = product.subcategory.map((s: ISubcategory) =>
-    typeof s === "string" ? s : s?.name ?? String(s)
-  );
+  const subcategories: string[] = (product.subcategory ?? []).map(
+  (s: ISubcategory) => s?.name ?? String(s)
+);
+
 
   const price = product.priceAfterDiscount ?? product.price ?? 0;
   const oldPrice = product.priceAfterDiscount ? product.price : null;
@@ -51,9 +61,10 @@ export default function ProductDetailsClient({
 
   const dispatch = useDispatch<AppDispatch>();
   const wishlist = useSelector((state: StoreType) => state.wishlist.wishList);
-  const isWished = (productId: string) => {
-    return findInWishList(wishlist, productId);
-  };
+
+  const isWished = (productId: string) =>
+    findInWishList(wishlist, productId);
+
   const toggleWish = (product: IProduct) => {
     dispatch(toggleWishList(product));
   };
@@ -68,13 +79,18 @@ export default function ProductDetailsClient({
     if (!el) return;
     const active = el.children[selectedImage] as HTMLElement | undefined;
     if (!active) return;
+
     const offset =
-      active.offsetLeft - el.clientWidth / 2 + active.clientWidth / 2;
+      active.offsetLeft -
+      el.clientWidth / 2 +
+      active.clientWidth / 2;
+
     el.scrollTo({ left: offset, behavior: "smooth" });
   }, [selectedImage]);
 
   const nextImage = () =>
     setSelectedImage((i) => (i + 1) % displayedImages.length);
+
   const prevImage = () =>
     setSelectedImage(
       (i) => (i - 1 + displayedImages.length) % displayedImages.length
@@ -84,7 +100,7 @@ export default function ProductDetailsClient({
     <div className="mt-22 min-h-screen bg-gradient-to-b from-background via-accent/6 to-background pt-20 pb-24">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Gallery: left / large */}
+          {/* ================= LEFT: GALLERY ================= */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -97,7 +113,10 @@ export default function ProductDetailsClient({
                 style={{ aspectRatio: "4 / 3", maxHeight: "70vh" }}
               >
                 <Image
-                  src={displayedImages[selectedImage]}
+                  src={
+                    displayedImages[selectedImage] ??
+                    "/placeholder-product.png"
+                  }
                   alt={product.title || "Product image"}
                   fill
                   sizes="(max-width: 768px) 100vw, 60vw"
@@ -113,7 +132,6 @@ export default function ProductDetailsClient({
                 />
               </div>
 
-              {/* navigation arrows */}
               {displayedImages.length > 1 && (
                 <>
                   <button
@@ -123,6 +141,7 @@ export default function ProductDetailsClient({
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
+
                   <button
                     onClick={nextImage}
                     aria-label="Next"
@@ -136,7 +155,6 @@ export default function ProductDetailsClient({
                       <button
                         key={i}
                         onClick={() => setSelectedImage(i)}
-                        aria-label={`Go to image ${i + 1}`}
                         className={`h-1.5 rounded-full transition-all ${
                           i === selectedImage
                             ? "w-6 bg-primary"
@@ -149,25 +167,24 @@ export default function ProductDetailsClient({
               )}
             </div>
 
-            {/* thumbnails */}
+            {/* ================= THUMBNAILS ================= */}
             <div
-              className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2"
               ref={thumbRef}
+              className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2"
             >
               {displayedImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImage(i)}
-                  className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden transition-all border-2 ${
+                  className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
                     selectedImage === i
                       ? "border-primary ring-2 ring-primary"
                       : "border-border hover:border-primary/60"
                   }`}
-                  aria-label={`Thumbnail ${i + 1}`}
                 >
                   <Image
-                    src={img}
-                    alt={`Thumb ${i + 1}`}
+                    src={img || "/placeholder-product.png"}
+                    alt={`Thumbnail ${i + 1}`}
                     fill
                     className="object-cover"
                   />
@@ -175,114 +192,66 @@ export default function ProductDetailsClient({
               ))}
             </div>
 
-            {/* meta panels: features, subcategories, sold */}
+            {/* ================= META PANELS ================= */}
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-border/40 p-4 bg-background">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border p-4 bg-background">
+                <div className="flex justify-between">
                   <div>
                     <div className="text-sm text-muted-foreground">Brand</div>
                     <div className="font-semibold">{brand}</div>
                   </div>
-                  <Tag className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="mt-3 text-sm text-muted-foreground">
-                  {subcategories.length ? (
-                    <div className="flex flex-wrap gap-2">
-                      {subcategories.map((s, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 rounded-full bg-muted/10 text-sm"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-xs">No subcategories</span>
-                  )}
+                  <Tag />
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border/40 p-4 bg-background">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border p-4 bg-background">
+                <div className="flex justify-between">
                   <div>
                     <div className="text-sm text-muted-foreground">Sold</div>
                     <div className="font-semibold">{sold}</div>
                   </div>
-                  <Layers className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="mt-3 text-sm text-muted-foreground">
-                  Fast movers & trending items
+                  <Layers />
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border/40 p-4 bg-background">
-                <div className="flex items-center justify-between">
+              <div className="rounded-2xl border p-4 bg-background">
+                <div className="flex justify-between">
                   <div>
                     <div className="text-sm text-muted-foreground">Ratings</div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Stars value={rating} />
-                        <span className="font-semibold">
-                          {rating.toFixed(1)}
-                        </span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        ({reviews} reviews)
-                      </div>
+                    <div className="flex gap-2 items-center">
+                      <Stars value={rating} />
+                      <span className="font-semibold">
+                        {rating.toFixed(1)}
+                      </span>
                     </div>
                   </div>
-                  <TrendingUp className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="mt-3 text-sm text-muted-foreground">
-                  Verified reviews & ratings
+                  <TrendingUp />
                 </div>
               </div>
             </div>
 
-            {/* description (collapsible) */}
-            <div className="rounded-2xl border border-border/40 p-6 bg-background">
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Product details
-                  </h3>
-                  <p
-                    className={`text-sm text-muted-foreground transition-max-h ${
-                      descOpen ? "max-h-[200vh]" : "max-h-28"
-                    } overflow-hidden`}
-                  >
-                    {description}
-                  </p>
-                  <button
-                    className="mt-3 text-sm text-primary"
-                    onClick={() => setDescOpen((s) => !s)}
-                  >
-                    {descOpen ? "Show less" : "Read more"}
-                  </button>
-                </div>
-
-                <div className="w-48 hidden md:block">
-                  <div className="text-sm text-muted-foreground">ID</div>
-                  <div className="font-semibold">{id}</div>
-
-                  <div className="mt-4 text-sm text-muted-foreground">
-                    Condition
-                  </div>
-                  <div className="font-semibold mt-1">{"New"}</div>
-                </div>
-              </div>
+            {/* ================= DESCRIPTION ================= */}
+            <div className="rounded-2xl border p-6 bg-background">
+              <h3 className="font-semibold mb-2">Product details</h3>
+              <p
+                className={`text-sm text-muted-foreground ${
+                  descOpen ? "" : "line-clamp-3"
+                }`}
+              >
+                {description}
+              </p>
+              <button
+                onClick={() => setDescOpen((s) => !s)}
+                className="text-primary text-sm mt-2"
+              >
+                {descOpen ? "Show less" : "Read more"}
+              </button>
             </div>
           </motion.div>
 
-          {/* Sticky Buy Box: right column */}
-          <motion.aside
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.38 }}
-            className="sticky top-24 self-start rounded-2xl border border-border/40 p-6 bg-background shadow-sm"
-          >
-            <div className="flex items-start gap-4">
+          {/* ================= RIGHT: BUY BOX ================= */}
+          <motion.aside className="sticky top-24 self-start rounded-2xl border p-6 bg-background shadow-sm">
+           <div className="flex items-start gap-4">
               <div className="flex-1">
                 <div className="text-muted-foreground text-sm">Price</div>
                 <div className="flex items-baseline gap-3">

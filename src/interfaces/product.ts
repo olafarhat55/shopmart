@@ -3,22 +3,37 @@ import { ICategory } from "./category";
 import { ISubcategory } from "./subcategory";
 
 export interface IProduct {
-  sold: number;
-  images: string[];
-  subcategory: ISubcategory[];
-  ratingsQuantity: number;
+  /* ================= IDs ================= */
   _id: string;
+  id?: string;
+
+  /* ================= Basic info ================= */
   title: string;
   slug: string;
-  description: string;
-  quantity: number;
+  description?: string;
+
+  /* ================= Pricing ================= */
   price: number;
   priceAfterDiscount?: number;
+
+  /* ================= Stock ================= */
+  quantity: number;
+  sold?: number;
+
+  /* ================= Images ================= */
   imageCover: string;
+  images?: string[];
+
+  /* ================= Relations ================= */
   category: ICategory;
-  brand: IBrand;
-  ratingsAverage: number;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  id: string;
+  brand?: IBrand | null;
+  subcategory?: ISubcategory[];
+
+  /* ================= Ratings ================= */
+  ratingsAverage?: number;
+  ratingsQuantity?: number;
+
+  /* ================= Dates ================= */
+  createdAt?: string;
+  updatedAt?: string;
 }

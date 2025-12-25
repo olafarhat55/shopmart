@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -19,11 +18,9 @@ import { motion } from "framer-motion";
 import NProgress from "nprogress";
 
 /* ================= TYPES ================= */
-
 type PaymentMethod = "card" | "cash";
 
 /* ================= PAGE ================= */
-
 export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
@@ -44,14 +41,12 @@ export default function CheckoutPage() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   /* ================= EFFECTS ================= */
-
   useEffect(() => {
     dispatch(fetchCartThunk());
     NProgress.done();
   }, [dispatch]);
 
   /* ================= DATA ================= */
-
   const dummyAddress = {
     name: "Default User",
     details: "No address needed",
@@ -61,15 +56,12 @@ export default function CheckoutPage() {
   };
 
   /* ================= ACTIONS ================= */
-
   const cardCheckout = async () => {
     if (!cart) return;
-
     const response = await apiService.checkoutSession(
       cart._id,
       dummyAddress
     );
-
     if (response?.session?.url) {
       window.location.href = response.session.url;
     }
@@ -77,12 +69,10 @@ export default function CheckoutPage() {
 
   const cashCheckout = async () => {
     if (!cart) return;
-
     const response = await apiService.checkoutOnDelivery(
       cart._id,
       dummyAddress
     );
-
     if (response?.status === "success") {
       router.push("/allorders");
     } else {
@@ -105,10 +95,8 @@ export default function CheckoutPage() {
       } else {
         await cashCheckout();
       }
-
       setPaid(true);
-    } catch (error: unknown) {
-      console.error(error);
+    } catch {
       setServerError("Failed to place order.");
     } finally {
       setLoading(false);
@@ -116,7 +104,6 @@ export default function CheckoutPage() {
   };
 
   /* ================= UI ================= */
-
   return (
     <div className="min-h-screen py-12 pt-24">
       <div className="container mx-auto px-4 max-w-6xl">
@@ -127,7 +114,7 @@ export default function CheckoutPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ================= LEFT ================= */}
+          {/* LEFT */}
           <section className="lg:col-span-2 space-y-4">
             <motion.div layout className="p-4 rounded-2xl shadow-lg border">
               <h2 className="font-semibold mb-3 text-lg">
@@ -152,12 +139,12 @@ export default function CheckoutPage() {
                         transition={{ delay: index * 0.03 }}
                         className="flex items-start gap-4 p-3 rounded-lg border bg-secondary/5 hover:shadow-md"
                       >
-                        <Image
+                        {/* IMAGE (FIXED) */}
+                        <img
                           src={it.product.imageCover}
                           alt={it.product.title}
-                          width={80}
-                          height={80}
-                          className="rounded object-cover flex-shrink-0"
+                          loading="lazy"
+                          className="w-20 h-20 rounded object-cover flex-shrink-0"
                         />
 
                         <div className="flex-1 min-w-0">
@@ -212,7 +199,7 @@ export default function CheckoutPage() {
             </motion.div>
           </section>
 
-          {/* ================= RIGHT ================= */}
+          {/* RIGHT */}
           <aside className="space-y-4">
             <motion.div layout className="p-4 rounded-2xl shadow-lg border">
               <h3 className="font-semibold mb-3 text-lg">
@@ -242,7 +229,6 @@ export default function CheckoutPage() {
               </div>
             </motion.div>
 
-            {/* PAYMENT */}
             <motion.div layout className="p-4 rounded-2xl shadow-lg border">
               <h4 className="font-medium mb-2">
                 Payment method

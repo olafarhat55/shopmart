@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiService } from "@/service/apiService";
@@ -94,11 +93,11 @@ export default async function Home() {
               >
                 {/* Image */}
                 <div className="aspect-square relative rounded-t-xl overflow-hidden">
-                  <Image
+                  <img
                     src={product.imageCover}
                     alt={product.title}
-                    fill
-                    className="object-cover"
+                    loading="lazy"
+                    className="object-cover w-full h-full"
                   />
                   <div className="absolute top-4 right-4 bg-gray-900 text-white px-3 py-1 rounded-full text-sm">
                     Hot
