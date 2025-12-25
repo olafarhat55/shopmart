@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import Link from "next/link";
 
 export default function ItemsCarousl({
   categories,
